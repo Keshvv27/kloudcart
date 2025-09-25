@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Flask config / secrets
+KloudPython/config.py
+
+# OS files
+.DS_Store
+Thumbs.db
