@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login-KloudCart</title>
-</head>
-<body>
+{% extends "base.html"%}
+
+{% block title %}Login-KloudCart{% endblock %}
+{% block content %}
     <h1>Login Page</h1>
     <form method="POST" action="/login">
         <input type="email" name="email" placeholder="Email" required><br>
@@ -11,5 +9,5 @@
         <button type="submit">Login</button>
     </form>
     <p>Don't have an account? <a href="/register">Register</a></p>
-</body>
-</html>
+{% endblock %}
+
