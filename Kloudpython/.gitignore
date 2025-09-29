@@ -1,13 +1,36 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
 
 # Virtual environment
 venv/
+ENV/
+env/
+.venv/
 
-# Flask config / secrets
-KloudPython/config.py
+# IDE settings
+.idea/
+.vscode/
 
 # OS files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+
+# Bytecode cache
+*.py[cod]
+
+# Flask instance folder
+instance/
+
+# Coverage / testing
+.coverage
+htmlcov/
+.cache/
+.pytest_cache/
