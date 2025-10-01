@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-{% block title %}KloudCart - Home{% endblock %}
+
+{% block title %}Home | KloudCart{% endblock %}
+
 {% block content %}
-    <h1>Welcome to KloudCart </h1>
-    <p><a href="/register">Register</a> | <a href="/login">Login</a></p>
-    <p><a href="/products">Browse Products</a> | <a href="/cart">View Cart</a></p>
-    <p><a href="/admin">Admin Panel</a></p>
+<div class="text-center">
+    <h1 class="mb-4">Welcome to KloudCart 🛒</h1>
+    <p class="lead">Your one-stop shop for fresh groceries, anytime, anywhere.</p>
+
+    {% if 'user' in session %}
+        <a href="{{ url_for('products.list_products') }}" class="btn btn-primary btn-lg mt-3">Browse Products</a>
+    {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg mt-3">Get Started</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg mt-3">Login</a>
+    {% endif %}
+</div>
 {% endblock %}

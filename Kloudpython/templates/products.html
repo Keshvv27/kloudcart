@@ -1,7 +1,29 @@
-{% extends "base.html"%}
+{% extends "base.html" %}
 
-{% block title %}Products-KloudCart{% endblock %}
+{% block title %}Products - KloudCart{% endblock %}
+
 {% block content %}
-<h1>Products Page</h1>
-<p>Coming soon....</p>
+<div class="container">
+    <h1 class="mb-4">Available Products</h1>
+
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">Price: ₹{{ product.price }}</p>
+
+                    {% if session.get("user") %}
+                        <a href="{{ url_for('products.add_to_cart', product_id=product.id) }}"
+                           class="btn btn-primary">Add to Cart</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login to Buy</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

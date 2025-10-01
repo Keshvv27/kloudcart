@@ -10,10 +10,12 @@ def create_app():
 
 # Import blueprints
     from .routes.auth import auth_bp
-    from .routes.products import products_bp
+    from .routes.products import products
 
 # Register blueprints
     app.register_blueprint(auth_bp)
-    app.register_blueprint(products_bp)
+    app.register_blueprint(products)
 
     return app
+
+

@@ -19,15 +19,23 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}">Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}">Cart</a></li>
+               <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}">Home</a></li>
 
-                </ul>
+    {% if 'user' not in session %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.list_products') }}">Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.cart') }}">Cart</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+    {% endif %}
+
+    {% if session.get('user') == "admin@kloudcart.com" %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.admin_dashboard') }}">Admin</a></li>
+    {% endif %}
+</ul>
+
             </div>
         </div>
     </nav>

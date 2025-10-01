@@ -1,6 +1,33 @@
 {% extends "base.html" %}
-{% block title %}Cart-Kloudcart{% endblock %}
+
+{% block title %}My Cart - KloudCart{% endblock %}
+
 {% block content %}
-<h1>Cart</h1>
-<p>coming soon....</p>
+<div class="container">
+    <h1 class="mb-4">My Cart</h1>
+
+    {% if items %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Total: ₹{{ total }}</h4>
+        <a href="#" class="btn btn-success">Checkout</a>
+    {% else %}
+        <p>Your cart is empty. <a href="{{ url_for('products.list_products') }}">Browse products</a></p>
+    {% endif %}
+</div>
 {% endblock %}
