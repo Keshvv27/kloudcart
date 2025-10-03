@@ -1,29 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Products - KloudCart{% endblock %}
+{% block title %}Products | KloudCart{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-4">Available Products</h1>
+<h2 class="mb-4">Available Products</h2>
 
-    <div class="row">
-        {% for product in products %}
-        <div class="col-md-4">
-            <div class="card mb-4">
+<div class="row">
+    {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text">Price: ₹{{ product.price }}</p>
 
-                    {% if session.get("user") %}
-                        <a href="{{ url_for('products.add_to_cart', product_id=product.id) }}"
-                           class="btn btn-primary">Add to Cart</a>
+                    {% if cart and product.id in cart %}
+                        <div class="input-group">
+                            <form action="{{ url_for('products.decrease_quantity', product_id=product.id) }}" method="POST">
+                                <button class="btn btn-outline-danger btn-sm">-</button>
+                            </form>
+                            <span class="px-2">{{ cart[product.id] }}</span>
+                            <form action="{{ url_for('products.increase_quantity', product_id=product.id) }}" method="POST">
+                                <button class="btn btn-outline-success btn-sm">+</button>
+                            </form>
+                        </div>
                     {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login to Buy</a>
+                        <form action="{{ url_for('products.add_to_cart', product_id=product.id) }}" method="POST">
+                            <button class="btn btn-primary">Add to Cart</button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
         </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
 </div>
+
+<!-- Floating Cart Button -->
+<a href="{{ url_for('products.cart') }}" class="btn btn-primary position-fixed"
+   style="bottom: 20px; right: 20px; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+    <i class="fas fa-shopping-cart"></i>
+    {% if cart %}
+        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+            {{ cart|length }}
+        </span>
+    {% endif %}
+</a>
+
 {% endblock %}

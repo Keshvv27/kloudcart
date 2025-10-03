@@ -9,12 +9,18 @@ products_db = [
     {"id": 3, "name": "Onions", "price": 25},
 ]
 
-cart_db = {}  # key = user_email, value = list of product_ids
+# key = user_email, value = {product_id: quantity}
+cart_db = {}
 
 
 @products.route("/products")
 def list_products():
-    return render_template("products.html", products=products_db)
+    if "user" in session:
+        user_email = session["user"]
+        cart = cart_db.get(user_email, {})
+    else:
+        cart = {}
+    return render_template("products.html", products=products_db, cart=cart)
 
 
 @products.route("/cart")
@@ -24,21 +30,73 @@ def cart():
         return redirect(url_for("auth.login"))
 
     user_email = session["user"]
-    cart_items = cart_db.get(user_email, [])
+    cart_items = cart_db.get(user_email, {})
 
-    items = [p for p in products_db if p["id"] in cart_items]
-    total = sum(p["price"] for p in items)
+    # Build a list of items with quantity
+    items = []
+    total = 0
+    for product in products_db:
+        if product["id"] in cart_items:
+            qty = cart_items[product["id"]]
+            subtotal = product["price"] * qty
+            items.append({
+                "id": product["id"],
+                "name": product["name"],
+                "price": product["price"],
+                "quantity": qty,
+                "subtotal": subtotal
+            })
+
+            total += subtotal
 
     return render_template("cart.html", items=items, total=total)
 
 
-@products.route("/add-to-cart/<int:product_id>")
+@products.route("/add-to-cart/<int:product_id>", methods=["POST"])
 def add_to_cart(product_id):
     if "user" not in session:
         flash("Please log in first.")
         return redirect(url_for("auth.login"))
 
     user_email = session["user"]
-    cart_db.setdefault(user_email, []).append(product_id)
+    cart = cart_db.setdefault(user_email, {})
+
+    cart[product_id] = cart.get(product_id, 0) + 1
     flash("Item added to cart!")
+    return redirect(url_for("products.list_products"))
+
+
+
+@products.route("/increase-quantity/<int:product_id>", methods=["POST"])
+def increase_quantity(product_id):
+    if "user" not in session:
+        return redirect(url_for("auth.login"))
+
+    user_email = session["user"]
+    cart = cart_db.setdefault(user_email, {})
+
+    if product_id in cart:
+        cart[product_id] += 1
+    else:
+        cart[product_id] = 1
+
+    return redirect(url_for("products.list_products"))
+
+
+@products.route("/decrease-quantity/<int:product_id>", methods=["POST"])
+def decrease_quantity(product_id):
+    if "user" not in session:
+        return redirect(url_for("auth.login"))
+
+    user_email = session["user"]
+    cart = cart_db.setdefault(user_email, {})
+
+    if product_id in cart:
+        cart[product_id] -= 1
+        if cart[product_id] <= 0:
+            del cart[product_id]
+
+    return redirect(url_for("products.list_products"))
+
+
     return redirect(url_for("products.list_products"))
