@@ -1,17 +1,19 @@
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
 
-auth_bp = Blueprint("auth", __name__)
+auth = Blueprint("auth", __name__)
 
-# in-memory "database"(later to Mongo)
+# In-memory "database" (later to be replaced by Mongo)
 users_db = {
     "admin@kloudcart.com": {"name": "Admin", "password": "admin123"}
 }
 
-@auth_bp.route("/")
+
+@auth.route("/")
 def home():
     return render_template("home.html")
 
-@auth_bp.route("/register", methods=["GET", "POST"])
+
+@auth.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         name = request.form["name"]
@@ -28,7 +30,8 @@ def register():
 
     return render_template("register.html")
 
-@auth_bp.route("/login", methods=["GET", "POST"])
+
+@auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form["email"]
@@ -45,13 +48,15 @@ def login():
 
     return render_template("login.html")
 
-@auth_bp.route("/logout")
+
+@auth.route("/logout")
 def logout():
     session.pop("user", None)
     flash("You have been logged out.")
     return redirect(url_for("auth.home"))
 
-@auth_bp.route("/admin")
+
+@auth.route("/admin")
 def admin_dashboard():
     if "user" not in session:
         flash("Please log in to access the admin panel.")

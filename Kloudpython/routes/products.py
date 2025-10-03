@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
 
-products = Blueprint("products", __name__)
+products = Blueprint("products", __name__)  # previously "products"
+
 
 # temporary "database"
 products_db = [
@@ -99,4 +100,4 @@ def decrease_quantity(product_id):
     return redirect(url_for("products.list_products"))
 
 
-    return redirect(url_for("products.list_products"))
+

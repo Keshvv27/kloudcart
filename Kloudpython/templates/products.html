@@ -13,7 +13,7 @@
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text">Price: ₹{{ product.price }}</p>
 
-                    {% if cart and product.id in cart %}
+                    {% if cart and product. id in cart %}
                         <div class="input-group">
                             <form action="{{ url_for('products.decrease_quantity', product_id=product.id) }}" method="POST">
                                 <button class="btn btn-outline-danger btn-sm">-</button>
