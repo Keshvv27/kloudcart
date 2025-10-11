@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, session, redirect, url_for, flash
 from ..db import get_products_collection, get_cart_collection, str_to_objectid, objectid_to_str
 from ..models.user import Product, CartItem
 
-products = Blueprint("products", __name__)
+products = Blueprint("products", __name__)  # previously "products"
+
 
 
 @products.route("/products")
