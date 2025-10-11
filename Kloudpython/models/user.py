@@ -25,10 +25,13 @@ class User:
         return user
 
 class Product:
-    def __init__(self, name, price, _id=None):
+    def __init__(self, name, price, category="", description="", image_url="", _id=None):
         self._id = _id or ObjectId()
         self.name = name
         self.price = price
+        self.category = category
+        self.description = description
+        self.image_url = image_url
         self.created_at = datetime.utcnow()
     
     def to_dict(self):
@@ -37,13 +40,23 @@ class Product:
             "_id": self._id,
             "name": self.name,
             "price": self.price,
+            "category": self.category,
+            "description": self.description,
+            "image_url": self.image_url,
             "created_at": self.created_at
         }
     
     @classmethod
     def from_dict(cls, data):
         """Create product from MongoDB document"""
-        product = cls(data["name"], data["price"], data["_id"])
+        product = cls(
+            data["name"], 
+            data["price"], 
+            data.get("category", ""),
+            data.get("description", ""),
+            data.get("image_url", ""),
+            data["_id"]
+        )
         product.created_at = data.get("created_at", datetime.utcnow())
         return product
 

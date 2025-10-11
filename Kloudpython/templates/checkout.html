@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - KloudCart{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Checkout</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Customer Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Customer Information</h5>
+                            <p class="mb-1"><strong>Email:</strong> {{ user_email }}</p>
+                            <p class="mb-0"><strong>Order Date:</strong> {{ current_date }}</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <h5 class="text-muted">Order Summary</h5>
+                            <p class="mb-0"><strong>Total Items:</strong> {{ items|length }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Order Items -->
+                    <h5 class="mb-3">Order Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Product Name</th>
+                                    <th class="text-center">Price (₹)</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Subtotal (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td class="text-center">{{ loop.index }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3" style="width: 50px; height: 50px; overflow: hidden; border-radius: 6px;">
+                                                {% if item.image_url %}
+                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/50x50?text=No+Image" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ item.name }}</div>
+                                                {% if item.category %}
+                                                    <small class="text-muted">{{ item.category }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-center">{{ "%.2f"|format(item.subtotal) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Total Section -->
+                    <div class="row mt-4">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Order Total</h5>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <span><strong>Total Amount:</strong></span>
+                                        <span class="text-primary"><strong>₹{{ "%.2f"|format(total) }}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('products.cart') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                                </a>
+                                <form method="POST" action="{{ url_for('products.confirm_order') }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-check me-2"></i>Confirm Order
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Notice -->
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Payment Notice:</strong> This is a demo checkout. No actual payment will be processed. 
+                        Click "Confirm Order" to complete your purchase.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+</style>
+{% endblock %}

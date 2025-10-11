@@ -21,7 +21,10 @@ def admin_dashboard():
         products_list.append({
             "id": str(product["_id"]),
             "name": product["name"],
-            "price": product["price"]
+            "price": product["price"],
+            "category": product.get("category", ""),
+            "description": product.get("description", ""),
+            "image_url": product.get("image_url", "")
         })
     
     return render_template("admin_dashboard.html", products=products_list)
@@ -37,9 +40,12 @@ def add_product():
     if request.method == "POST":
         name = request.form["name"]
         price = int(request.form["price"])
+        category = request.form.get("category", "")
+        description = request.form.get("description", "")
+        image_url = request.form.get("image_url", "")
         
         products_collection = get_products_collection()
-        product = Product(name, price)
+        product = Product(name, price, category, description, image_url)
         products_collection.insert_one(product.to_dict())
         
         flash("✅ Product added successfully!")
@@ -70,10 +76,19 @@ def edit_product(product_id):
     if request.method == "POST":
         name = request.form["name"]
         price = int(request.form["price"])
+        category = request.form.get("category", "")
+        description = request.form.get("description", "")
+        image_url = request.form.get("image_url", "")
         
         products_collection.update_one(
             {"_id": product_object_id},
-            {"$set": {"name": name, "price": price}}
+            {"$set": {
+                "name": name, 
+                "price": price,
+                "category": category,
+                "description": description,
+                "image_url": image_url
+            }}
         )
         
         flash("✅ Product updated successfully!")
@@ -83,7 +98,10 @@ def edit_product(product_id):
     product = {
         "id": str(product_data["_id"]),
         "name": product_data["name"],
-        "price": product_data["price"]
+        "price": product_data["price"],
+        "category": product_data.get("category", ""),
+        "description": product_data.get("description", ""),
+        "image_url": product_data.get("image_url", "")
     }
     
     return render_template("edit_product.html", product=product)
