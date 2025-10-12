@@ -1,8 +1,38 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from werkzeug.utils import secure_filename
 from ..db import get_products_collection, str_to_objectid, objectid_to_str
 from ..models.user import Product
+import os
+import uuid
 
 admin = Blueprint("admin", __name__)
+
+# Allowed file extensions for images
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    """Check if the uploaded file has an allowed extension"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_uploaded_file(file):
+    """Save uploaded file to static/uploads directory with unique filename"""
+    if file and allowed_file(file.filename):
+        # Create uploads directory if it doesn't exist
+        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Generate unique filename
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        unique_filename = f"{name}-{uuid.uuid4().hex[:8]}{ext}"
+        
+        # Save file
+        file_path = os.path.join(upload_dir, unique_filename)
+        file.save(file_path)
+        
+        # Return the URL path for database storage
+        return f"/static/uploads/{unique_filename}"
+    return None
 
 
 # Admin Dashboard
@@ -42,7 +72,21 @@ def add_product():
         price = int(request.form["price"])
         category = request.form.get("category", "")
         description = request.form.get("description", "")
-        image_url = request.form.get("image_url", "")
+        
+        # Handle file upload
+        image_file = request.files.get("image")
+        image_url = ""
+        
+        if image_file and image_file.filename:
+            saved_path = save_uploaded_file(image_file)
+            if saved_path:
+                image_url = saved_path
+            else:
+                flash("⚠️ Invalid image file. Please upload a valid image (PNG, JPG, JPEG, GIF, WebP).")
+                return render_template("add_product.html")
+        else:
+            # Use default placeholder image if no image uploaded
+            image_url = "/static/images/placeholder.svg"
         
         products_collection = get_products_collection()
         product = Product(name, price, category, description, image_url)
@@ -78,17 +122,27 @@ def edit_product(product_id):
         price = int(request.form["price"])
         category = request.form.get("category", "")
         description = request.form.get("description", "")
-        image_url = request.form.get("image_url", "")
+        
+        # Handle file upload - only update if new image is uploaded
+        image_file = request.files.get("image")
+        update_data = {
+            "name": name, 
+            "price": price,
+            "category": category,
+            "description": description
+        }
+        
+        if image_file and image_file.filename:
+            saved_path = save_uploaded_file(image_file)
+            if saved_path:
+                update_data["image_url"] = saved_path
+            else:
+                flash("⚠️ Invalid image file. Please upload a valid image (PNG, JPG, JPEG, GIF, WebP).")
+                return render_template("edit_product.html", product=product)
         
         products_collection.update_one(
             {"_id": product_object_id},
-            {"$set": {
-                "name": name, 
-                "price": price,
-                "category": category,
-                "description": description,
-                "image_url": image_url
-            }}
+            {"$set": update_data}
         )
         
         flash("✅ Product updated successfully!")
