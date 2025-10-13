@@ -3,15 +3,132 @@
 {% block title %}Home | KloudCart{% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="mb-4">Welcome to KloudCart 🛒</h1>
-    <p class="lead">Your one-stop shop for fresh groceries, anytime, anywhere.</p>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title fade-in">Fresh Groceries Delivered to You</h1>
+                <p class="hero-subtitle fade-in">Your one-stop shop for fresh groceries, anytime, anywhere. Quality products at your doorstep.</p>
+                
+                {% if 'user' in session %}
+                    <a href="{{ url_for('products.list_products') }}" class="btn btn-light btn-lg mt-3 slide-up">
+                        <i class="fas fa-store me-2"></i>Shop Now
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg mt-3 slide-up">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg mt-3 ms-2 slide-up">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-shopping-basket" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
 
-    {% if 'user' in session %}
-        <a href="{{ url_for('products.list_products') }}" class="btn btn-primary btn-lg mt-3">Browse Products</a>
-    {% else %}
-        <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg mt-3">Get Started</a>
-        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg mt-3">Login</a>
-    {% endif %}
-</div>
+<!-- Category Cards Section -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary-green">Shop by Category</h2>
+            <p class="lead text-muted">Discover our wide range of fresh products</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <a href="{{ url_for('products.list_products') }}" class="category-card card h-100">
+                <div class="card-body">
+                    <div class="category-icon">
+                        <i class="fas fa-carrot"></i>
+                    </div>
+                    <h5 class="category-title">Fresh Vegetables</h5>
+                    <p class="category-description">Farm-fresh vegetables delivered daily</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <a href="{{ url_for('products.list_products') }}" class="category-card card h-100">
+                <div class="card-body">
+                    <div class="category-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h5 class="category-title">Fresh Fruits</h5>
+                    <p class="category-description">Seasonal fruits at their peak freshness</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <a href="{{ url_for('products.list_products') }}" class="category-card card h-100">
+                <div class="card-body">
+                    <div class="category-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h5 class="category-title">Daily Essentials</h5>
+                    <p class="category-description">Bread, milk, eggs and daily necessities</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <a href="{{ url_for('products.list_products') }}" class="category-card card h-100">
+                <div class="card-body">
+                    <div class="category-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h5 class="category-title">Organic Products</h5>
+                    <p class="category-description">Certified organic and natural products</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-6 fw-bold text-primary-green">Why Choose KloudCart?</h2>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="text-center">
+                <div class="category-icon mb-3">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h5 class="fw-bold">Fast Delivery</h5>
+                <p class="text-muted">Same-day delivery for fresh products</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="text-center">
+                <div class="category-icon mb-3">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h5 class="fw-bold">Fresh Quality</h5>
+                <p class="text-muted">Direct from farm to your doorstep</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="text-center">
+                <div class="category-icon mb-3">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5 class="fw-bold">Safe & Secure</h5>
+                <p class="text-muted">Secure payments and safe delivery</p>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -6,14 +6,16 @@
     <title>{% block title %}KloudCart{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<!--Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('auth.home') }}">KloudCart</a>
+<!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-modern">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('auth.home') }}">
+                <i class="fas fa-shopping-cart me-2"></i>KloudCart
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -22,21 +24,21 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                <ul class="navbar-nav ms-auto">
-    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}">Home</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.home') }}"><i class="fas fa-home me-1"></i>Home</a></li>
 
     {% if 'user' not in session %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}"><i class="fas fa-user-plus me-1"></i>Register</a></li>
     {% else %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.list_products') }}">Products</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.cart') }}">Cart</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.checkout') }}">Checkout</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.list_products') }}"><i class="fas fa-store me-1"></i>Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.cart') }}"><i class="fas fa-shopping-cart me-1"></i>Cart</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.checkout') }}"><i class="fas fa-credit-card me-1"></i>Checkout</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
     {% endif %}
 
     {% if session.get('user') == "admin@kloudcart.com" %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}">Admin</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_receipts') }}">Receipts</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}"><i class="fas fa-cog me-1"></i>Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_receipts') }}"><i class="fas fa-receipt me-1"></i>Receipts</a></li>
     {% endif %}
 </ul>
 
@@ -49,8 +51,8 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        {{ msg }}
+                    <div class="alert alert-success alert-dismissible fade show rounded-custom" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ msg }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
@@ -59,9 +61,9 @@
     </div>
 
 <!-- Page-specific content -->
-    <div class="container mt-4">
+    <main>
         {% block content %}{% endblock %}
-    </div>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

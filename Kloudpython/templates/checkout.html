@@ -3,85 +3,110 @@
 {% block title %}Checkout - KloudCart{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container my-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Checkout</h2>
+        <div class="col-lg-10">
+            <div class="checkout-card card">
+                <div class="checkout-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>Checkout
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-75">Review your order and confirm your purchase</p>
                 </div>
-                <div class="card-body">
+                
+                <div class="checkout-body">
                     <!-- Customer Information -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="text-muted">Customer Information</h5>
-                            <p class="mb-1"><strong>Email:</strong> {{ user_email }}</p>
-                            <p class="mb-0"><strong>Order Date:</strong> {{ current_date }}</p>
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary-green">
+                                        <i class="fas fa-user me-2"></i>Customer Information
+                                    </h5>
+                                    <p class="mb-2"><strong>Email:</strong> {{ user_email }}</p>
+                                    <p class="mb-0"><strong>Order Date:</strong> {{ current_date }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6 text-md-end">
-                            <h5 class="text-muted">Order Summary</h5>
-                            <p class="mb-0"><strong>Total Items:</strong> {{ items|length }}</p>
+                        <div class="col-md-6">
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary-green">
+                                        <i class="fas fa-shopping-bag me-2"></i>Order Summary
+                                    </h5>
+                                    <p class="mb-2"><strong>Total Items:</strong> {{ items|length }}</p>
+                                    <p class="mb-0"><strong>Order Status:</strong> <span class="badge bg-warning">Pending</span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <hr>
-
                     <!-- Order Items -->
-                    <h5 class="mb-3">Order Items</h5>
+                    <h5 class="mb-3 text-primary-green">
+                        <i class="fas fa-list me-2"></i>Order Items
+                    </h5>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-hover">
                             <thead class="table-light">
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th>Product Name</th>
-                                    <th class="text-center">Price (₹)</th>
+                                    <th>Product</th>
+                                    <th class="text-center">Price</th>
                                     <th class="text-center">Quantity</th>
-                                    <th class="text-center">Subtotal (₹)</th>
+                                    <th class="text-center">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in items %}
                                 <tr>
-                                    <td class="text-center">{{ loop.index }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-green">{{ loop.index }}</span>
+                                    </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="me-3" style="width: 50px; height: 50px; overflow: hidden; border-radius: 6px;">
+                                            <div class="me-3">
                                                 {% if item.image_url %}
-                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/static/images/placeholder.svg'">
+                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-item-image" onerror="this.src='/static/images/placeholder.svg'">
                                                 {% else %}
-                                                    <img src="/static/images/placeholder.svg" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="/static/images/placeholder.svg" alt="{{ item.name }}" class="cart-item-image">
                                                 {% endif %}
                                             </div>
                                             <div>
                                                 <div class="fw-bold">{{ item.name }}</div>
                                                 {% if item.category %}
-                                                    <small class="text-muted">{{ item.category }}</small>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-tag me-1"></i>{{ item.category }}
+                                                    </small>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center">{{ "%.2f"|format(item.price) }}</td>
-                                    <td class="text-center">{{ item.quantity }}</td>
-                                    <td class="text-center">{{ "%.2f"|format(item.subtotal) }}</td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-primary-green">₹{{ "%.2f"|format(item.price) }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-green fs-6">{{ item.quantity }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-primary-green">₹{{ "%.2f"|format(item.subtotal) }}</span>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Total Section -->
-                    <div class="row mt-4">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h5 class="card-title">Order Total</h5>
-                                    <hr>
-                                    <div class="d-flex justify-content-between">
-                                        <span><strong>Total Amount:</strong></span>
-                                        <span class="text-primary"><strong>₹{{ "%.2f"|format(total) }}</strong></span>
-                                    </div>
-                                </div>
+                    <!-- Order Total -->
+                    <div class="order-summary">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calculator me-2"></i>Order Total
+                                </h5>
+                                <p class="text-muted mb-0">Final amount to be charged</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="order-total">₹{{ "%.2f"|format(total) }}</div>
                             </div>
                         </div>
                     </div>
@@ -90,7 +115,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between">
-                                <a href="{{ url_for('products.cart') }}" class="btn btn-outline-secondary">
+                                <a href="{{ url_for('products.cart') }}" class="btn btn-outline-secondary btn-lg">
                                     <i class="fas fa-arrow-left me-2"></i>Back to Cart
                                 </a>
                                 <form method="POST" action="{{ url_for('products.confirm_order') }}" style="display: inline;">
@@ -103,7 +128,7 @@
                     </div>
 
                     <!-- Payment Notice -->
-                    <div class="alert alert-info mt-4">
+                    <div class="alert alert-info mt-4 rounded-custom">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Payment Notice:</strong> This is a demo checkout. No actual payment will be processed. 
                         Click "Confirm Order" to complete your purchase.
@@ -113,29 +138,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.card {
-    border: none;
-    border-radius: 10px;
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-}
-
-.btn-lg {
-    padding: 12px 30px;
-    font-size: 1.1rem;
-}
-
-.alert {
-    border-radius: 8px;
-}
-</style>
 {% endblock %}

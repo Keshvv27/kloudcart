@@ -3,172 +3,176 @@
 {% block title %}Order Confirmed - KloudCart{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container my-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h2 class="mb-0"><i class="fas fa-check-circle me-2"></i>Order Confirmed!</h2>
+        <div class="col-lg-10">
+            <!-- Success Header -->
+            <div class="success-container mb-4">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                <div class="card-body">
-                    <!-- Order Details -->
+                <h1 class="success-title">Order Confirmed!</h1>
+                <p class="success-message">Thank you for your order! Your purchase has been successfully processed.</p>
+            </div>
+
+            <!-- Order Details Card -->
+            <div class="checkout-card card mb-4">
+                <div class="checkout-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Order Details
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">Order #{{ order_id }}</p>
+                </div>
+                
+                <div class="checkout-body">
+                    <!-- Order Information -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="text-muted">Order Information</h5>
-                            <p class="mb-1"><strong>Order ID:</strong> #{{ order_id }}</p>
-                            <p class="mb-1"><strong>Customer:</strong> {{ user_email }}</p>
-                            <p class="mb-0"><strong>Order Date:</strong> {{ current_date }}</p>
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary-green">
+                                        <i class="fas fa-user me-2"></i>Customer Information
+                                    </h5>
+                                    <p class="mb-2"><strong>Email:</strong> {{ user_email }}</p>
+                                    <p class="mb-0"><strong>Order Date:</strong> {{ current_date }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6 text-md-end">
-                            <h5 class="text-muted">Order Summary</h5>
-                            <p class="mb-1"><strong>Total Items:</strong> {{ items|length }}</p>
-                            <p class="mb-0"><strong>Total Amount:</strong> ₹{{ "%.2f"|format(total) }}</p>
+                        <div class="col-md-6">
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary-green">
+                                        <i class="fas fa-shopping-bag me-2"></i>Order Summary
+                                    </h5>
+                                    <p class="mb-2"><strong>Total Items:</strong> {{ items|length }}</p>
+                                    <p class="mb-0"><strong>Total Amount:</strong> <span class="text-primary-green fw-bold">₹{{ "%.2f"|format(total) }}</span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <hr>
-
                     <!-- Order Items -->
-                    <h5 class="mb-3">Ordered Items</h5>
+                    <h5 class="mb-3 text-primary-green">
+                        <i class="fas fa-list me-2"></i>Ordered Items
+                    </h5>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-hover">
                             <thead class="table-light">
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th>Product Name</th>
-                                    <th class="text-center">Price (₹)</th>
+                                    <th>Product</th>
+                                    <th class="text-center">Price</th>
                                     <th class="text-center">Quantity</th>
-                                    <th class="text-center">Subtotal (₹)</th>
+                                    <th class="text-center">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in items %}
                                 <tr>
-                                    <td class="text-center">{{ loop.index }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-green">{{ loop.index }}</span>
+                                    </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="me-3" style="width: 50px; height: 50px; overflow: hidden; border-radius: 6px;">
+                                            <div class="me-3">
                                                 {% if item.image_url %}
-                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/static/images/placeholder.svg'">
+                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-item-image" onerror="this.src='/static/images/placeholder.svg'">
                                                 {% else %}
-                                                    <img src="/static/images/placeholder.svg" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="/static/images/placeholder.svg" alt="{{ item.name }}" class="cart-item-image">
                                                 {% endif %}
                                             </div>
                                             <div>
                                                 <div class="fw-bold">{{ item.name }}</div>
                                                 {% if item.category %}
-                                                    <small class="text-muted">{{ item.category }}</small>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-tag me-1"></i>{{ item.category }}
+                                                    </small>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center">{{ "%.2f"|format(item.price) }}</td>
-                                    <td class="text-center">{{ item.quantity }}</td>
-                                    <td class="text-center">{{ "%.2f"|format(item.subtotal) }}</td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-primary-green">₹{{ "%.2f"|format(item.price) }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-green fs-6">{{ item.quantity }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-primary-green">₹{{ "%.2f"|format(item.subtotal) }}</span>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Total Section -->
-                    <div class="row mt-4">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Final Total</h5>
-                                    <hr class="border-light">
-                                    <div class="d-flex justify-content-between">
-                                        <span><strong>Total Amount:</strong></span>
-                                        <span><strong>₹{{ "%.2f"|format(total) }}</strong></span>
-                                    </div>
-                                </div>
+                    <!-- Final Total -->
+                    <div class="order-summary">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calculator me-2"></i>Final Total
+                                </h5>
+                                <p class="text-muted mb-0">Amount charged to your account</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="order-total">₹{{ "%.2f"|format(total) }}</div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Success Message -->
-                    <div class="alert alert-success mt-4">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <strong>Thank you for your order!</strong> Your order has been successfully placed and your cart has been cleared.
-                        {% if email_sent %}
-                            <br><i class="fas fa-envelope me-2"></i>A copy of your receipt has been sent to your email.
-                        {% else %}
-                            <br><i class="fas fa-exclamation-triangle me-2"></i>Note: Email receipt could not be sent, but you can download it below.
-                        {% endif %}
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="row mt-4">
-                        <div class="col-12 text-center">
-                            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                <!-- Download PDF Receipt Button -->
-                                <form method="POST" action="{{ url_for('products.download_receipt_with_data') }}" style="display: inline;">
-                                    <input type="hidden" name="order_id" value="{{ order_id }}">
-                                    <input type="hidden" name="total" value="{{ total }}">
-                                    <input type="hidden" name="current_date" value="{{ current_date }}">
-                                    <input type="hidden" name="item_count" value="{{ items|length }}">
-                                    {% for item in items %}
-                                        <input type="hidden" name="item_{{ loop.index0 }}_name" value="{{ item.name }}">
-                                        <input type="hidden" name="item_{{ loop.index0 }}_category" value="{{ item.category }}">
-                                        <input type="hidden" name="item_{{ loop.index0 }}_quantity" value="{{ item.quantity }}">
-                                        <input type="hidden" name="item_{{ loop.index0 }}_price" value="{{ item.price }}">
-                                        <input type="hidden" name="item_{{ loop.index0 }}_subtotal" value="{{ item.subtotal }}">
-                                    {% endfor %}
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-file-pdf me-2"></i>Download PDF Receipt
-                                    </button>
-                                </form>
-                                
-                                <a href="{{ url_for('products.list_products') }}" class="btn btn-primary">
-                                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
-                                </a>
-                                <a href="{{ url_for('auth.home') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-home me-2"></i>Go Home
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Additional Information -->
-                    <div class="alert alert-info mt-4">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Note:</strong> This is a demo e-commerce application. In a real application, you would receive 
-                        an email confirmation and tracking information for your order.
                     </div>
                 </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="alert alert-success rounded-custom">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Order Successfully Placed!</strong> Your order has been confirmed and your cart has been cleared.
+                {% if email_sent %}
+                    <br><i class="fas fa-envelope me-2"></i>A copy of your receipt has been sent to your email address.
+                {% else %}
+                    <br><i class="fas fa-exclamation-triangle me-2"></i>Note: Email receipt could not be sent, but you can download it below.
+                {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <!-- Download PDF Receipt Button -->
+                        <form method="POST" action="{{ url_for('products.download_receipt_with_data') }}" style="display: inline;">
+                            <input type="hidden" name="order_id" value="{{ order_id }}">
+                            <input type="hidden" name="total" value="{{ total }}">
+                            <input type="hidden" name="current_date" value="{{ current_date }}">
+                            <input type="hidden" name="item_count" value="{{ items|length }}">
+                            {% for item in items %}
+                                <input type="hidden" name="item_{{ loop.index0 }}_name" value="{{ item.name }}">
+                                <input type="hidden" name="item_{{ loop.index0 }}_category" value="{{ item.category }}">
+                                <input type="hidden" name="item_{{ loop.index0 }}_quantity" value="{{ item.quantity }}">
+                                <input type="hidden" name="item_{{ loop.index0 }}_price" value="{{ item.price }}">
+                                <input type="hidden" name="item_{{ loop.index0 }}_subtotal" value="{{ item.subtotal }}">
+                            {% endfor %}
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-file-pdf me-2"></i>Download Receipt
+                            </button>
+                        </form>
+                        
+                        <a href="{{ url_for('products.list_products') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </a>
+                        <a href="{{ url_for('auth.home') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-home me-2"></i>Return to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="alert alert-info mt-4 rounded-custom">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Note:</strong> This is a demo e-commerce application. In a real application, you would receive 
+                an email confirmation and tracking information for your order.
             </div>
         </div>
     </div>
 </div>
-
-<style>
-.card {
-    border: none;
-    border-radius: 10px;
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-}
-
-.btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-}
-
-.alert {
-    border-radius: 8px;
-}
-
-.gap-3 {
-    gap: 1rem;
-}
-</style>
 {% endblock %}

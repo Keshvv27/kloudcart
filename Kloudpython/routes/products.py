@@ -3,11 +3,17 @@ from ..db import get_products_collection, get_cart_collection, get_users_collect
 from ..models.user import Product, CartItem
 from datetime import datetime
 import os
+import pytz
 from ..utils.pdf_generator import generate_receipt_pdf, create_receipts_directory
 from ..utils.email_helper import send_receipt_email, get_user_email_from_db, cleanup_pdf_file
 
 products = Blueprint("products", __name__)  # previously "products"
 
+
+def get_ist_time():
+    """Get current time in Indian Standard Time (IST)"""
+    ist = pytz.timezone('Asia/Kolkata')
+    return datetime.now(ist)
 
 
 @products.route("/products")
@@ -221,7 +227,7 @@ def checkout():
         flash("Your cart is empty. Add some products first!")
         return redirect(url_for("products.cart"))
 
-    current_date = datetime.utcnow().strftime("%B %d, %Y at %I:%M %p")
+    current_date = get_ist_time().strftime("%B %d, %Y at %I:%M %p")
     return render_template("checkout.html", items=items, total=total, user_email=user_email, current_date=current_date)
 
 
@@ -242,7 +248,7 @@ def confirm_order():
     # Build order summary
     items = []
     total = 0
-    order_id = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    order_id = get_ist_time().strftime("%Y%m%d%H%M%S")
     
     for cart_item in cart_items:
         product_id = cart_item["product_id"]
@@ -271,7 +277,7 @@ def confirm_order():
     # Clear the cart after order confirmation
     cart_collection.delete_many({"user_email": user_email})
     
-    current_date = datetime.utcnow().strftime("%B %d, %Y at %I:%M %p")
+    current_date = get_ist_time().strftime("%B %d, %Y at %I:%M %p")
     
     # Prepare order data for email
     order_data = {
@@ -289,7 +295,7 @@ def confirm_order():
         receipts_dir = create_receipts_directory()
         
         # Generate filename
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_ist_time().strftime("%Y%m%d_%H%M%S")
         username_clean = user_email.replace("@", "_").replace(".", "_")
         filename = f"receipt_{username_clean}_{timestamp}.pdf"
         pdf_path = os.path.join(receipts_dir, filename)
@@ -329,7 +335,7 @@ def confirm_order():
             "username": username,
             "items": items_for_log,
             "total_amount": total,
-            "timestamp": datetime.utcnow(),
+            "timestamp": get_ist_time(),
             "receipt_filename": filename,
             "email_status": "sent" if email_sent else "failed"
         })
@@ -367,7 +373,7 @@ def download_receipt():
         receipts_dir = create_receipts_directory()
         
         # Generate filename
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_ist_time().strftime("%Y%m%d_%H%M%S")
         username_clean = user_email.replace("@", "_").replace(".", "_")
         filename = f"receipt_{username_clean}_{timestamp}.pdf"
         file_path = os.path.join(receipts_dir, filename)
@@ -379,7 +385,7 @@ def download_receipt():
             'user_email': user_email,
             'items': [],  # This would be fetched from orders collection
             'total': 0,   # This would be fetched from orders collection
-            'current_date': datetime.utcnow().strftime("%B %d, %Y at %I:%M %p")
+            'current_date': get_ist_time().strftime("%B %d, %Y at %I:%M %p")
         }
         
         # Generate PDF
@@ -411,7 +417,7 @@ def download_receipt_with_data():
         # Get order data from form
         order_id = request.form.get('order_id')
         total = float(request.form.get('total', 0))
-        current_date = request.form.get('current_date', datetime.utcnow().strftime("%B %d, %Y at %I:%M %p"))
+        current_date = request.form.get('current_date', get_ist_time().strftime("%B %d, %Y at %I:%M %p"))
         
         # Parse items from form data
         items = []
@@ -431,7 +437,7 @@ def download_receipt_with_data():
         receipts_dir = create_receipts_directory()
         
         # Generate filename
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_ist_time().strftime("%Y%m%d_%H%M%S")
         username_clean = user_email.replace("@", "_").replace(".", "_")
         filename = f"receipt_{username_clean}_{timestamp}.pdf"
         file_path = os.path.join(receipts_dir, filename)

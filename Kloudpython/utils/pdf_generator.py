@@ -6,13 +6,20 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from datetime import datetime
 import os
+import pytz
+
+
+def get_ist_time():
+    """Get current time in Indian Standard Time (IST)"""
+    ist = pytz.timezone('Asia/Kolkata')
+    return datetime.now(ist)
 
 
 def generate_receipt_pdf(order_data, output_path):
     """
     Generate a PDF receipt for an order
     
-    Args:
+    elements:
         order_data (dict): Dictionary containing order information
             - order_id (str): Order ID
             - user_email (str): User email
