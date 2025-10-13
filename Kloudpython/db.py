@@ -62,3 +62,6 @@ def get_products_collection():
 
 def get_cart_collection():
     return db.get_collection("cart")
+
+def get_receipts_collection():
+    return db.get_collection("receipts")

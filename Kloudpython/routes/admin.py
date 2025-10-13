@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from werkzeug.utils import secure_filename
-from ..db import get_products_collection, str_to_objectid, objectid_to_str
+from ..db import get_products_collection, get_receipts_collection, str_to_objectid, objectid_to_str
 from ..models.user import Product
 import os
 import uuid
@@ -58,6 +58,33 @@ def admin_dashboard():
         })
     
     return render_template("admin_dashboard.html", products=products_list)
+
+
+# Admin Receipts Logs
+@admin.route("/admin/receipts")
+def admin_receipts():
+    if session.get("user") != "admin@kloudcart.com":
+        flash("Access denied. Admins only!")
+        return redirect(url_for("products.list_products"))
+
+    receipts_collection = get_receipts_collection()
+    logs = list(receipts_collection.find().sort("timestamp", -1))
+
+    # Transform for template
+    entries = []
+    for doc in logs:
+        entries.append({
+            "id": str(doc.get("_id")),
+            "username": doc.get("username", ""),
+            "user_email": doc.get("user_email", ""),
+            "total_amount": doc.get("total_amount", 0),
+            "timestamp": doc.get("timestamp"),
+            "email_status": doc.get("email_status", ""),
+            "items": doc.get("items", []),
+            "receipt_filename": doc.get("receipt_filename", "")
+        })
+
+    return render_template("admin_receipts.html", entries=entries)
 
 
 # Add Product

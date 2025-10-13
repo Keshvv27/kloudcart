@@ -36,6 +36,7 @@
 
     {% if session.get('user') == "admin@kloudcart.com" %}
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_receipts') }}">Receipts</a></li>
     {% endif %}
 </ul>
 

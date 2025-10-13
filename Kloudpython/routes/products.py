@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash, request, send_file, current_app
-from ..db import get_products_collection, get_cart_collection, str_to_objectid, objectid_to_str
+from ..db import get_products_collection, get_cart_collection, get_users_collection, get_receipts_collection, str_to_objectid, objectid_to_str
 from ..models.user import Product, CartItem
 from datetime import datetime
 import os
@@ -307,6 +307,35 @@ def confirm_order():
         current_app.logger.error(f"Failed to send email receipt: {str(e)}")
         email_sent = False
     
+    # Log receipt to MongoDB
+    try:
+        receipts_collection = get_receipts_collection()
+        users_collection = get_users_collection()
+        user_doc = users_collection.find_one({"email": user_email})
+        username = user_doc.get("name", "") if user_doc else ""
+
+        # Keep only the required fields for items
+        items_for_log = []
+        for item in items:
+            items_for_log.append({
+                "name": item.get("name"),
+                "quantity": item.get("quantity"),
+                "price": item.get("price"),
+                "subtotal": item.get("subtotal")
+            })
+
+        receipts_collection.insert_one({
+            "user_email": user_email,
+            "username": username,
+            "items": items_for_log,
+            "total_amount": total,
+            "timestamp": datetime.utcnow(),
+            "receipt_filename": filename,
+            "email_status": "sent" if email_sent else "failed"
+        })
+    except Exception as e:
+        current_app.logger.error(f"Failed to log receipt: {str(e)}")
+
     # Flash message with email status
     if email_sent:
         flash(f"Order #{order_id} confirmed successfully! Total amount: ₹{total}. A copy of your receipt has been sent to your email.")
