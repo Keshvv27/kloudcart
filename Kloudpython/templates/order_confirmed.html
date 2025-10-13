@@ -92,13 +92,35 @@
                     <div class="alert alert-success mt-4">
                         <i class="fas fa-check-circle me-2"></i>
                         <strong>Thank you for your order!</strong> Your order has been successfully placed and your cart has been cleared.
-                        You will receive a confirmation email shortly.
+                        {% if email_sent %}
+                            <br><i class="fas fa-envelope me-2"></i>A copy of your receipt has been sent to your email.
+                        {% else %}
+                            <br><i class="fas fa-exclamation-triangle me-2"></i>Note: Email receipt could not be sent, but you can download it below.
+                        {% endif %}
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="row mt-4">
                         <div class="col-12 text-center">
-                            <div class="d-flex justify-content-center gap-3">
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <!-- Download PDF Receipt Button -->
+                                <form method="POST" action="{{ url_for('products.download_receipt_with_data') }}" style="display: inline;">
+                                    <input type="hidden" name="order_id" value="{{ order_id }}">
+                                    <input type="hidden" name="total" value="{{ total }}">
+                                    <input type="hidden" name="current_date" value="{{ current_date }}">
+                                    <input type="hidden" name="item_count" value="{{ items|length }}">
+                                    {% for item in items %}
+                                        <input type="hidden" name="item_{{ loop.index0 }}_name" value="{{ item.name }}">
+                                        <input type="hidden" name="item_{{ loop.index0 }}_category" value="{{ item.category }}">
+                                        <input type="hidden" name="item_{{ loop.index0 }}_quantity" value="{{ item.quantity }}">
+                                        <input type="hidden" name="item_{{ loop.index0 }}_price" value="{{ item.price }}">
+                                        <input type="hidden" name="item_{{ loop.index0 }}_subtotal" value="{{ item.subtotal }}">
+                                    {% endfor %}
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-file-pdf me-2"></i>Download PDF Receipt
+                                    </button>
+                                </form>
+                                
                                 <a href="{{ url_for('products.list_products') }}" class="btn btn-primary">
                                     <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
                                 </a>

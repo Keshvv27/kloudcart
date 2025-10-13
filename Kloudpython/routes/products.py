@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, session, redirect, url_for, flash, request
+from flask import Blueprint, render_template, session, redirect, url_for, flash, request, send_file, current_app
 from ..db import get_products_collection, get_cart_collection, str_to_objectid, objectid_to_str
 from ..models.user import Product, CartItem
 from datetime import datetime
+import os
+from ..utils.pdf_generator import generate_receipt_pdf, create_receipts_directory
+from ..utils.email_helper import send_receipt_email, get_user_email_from_db, cleanup_pdf_file
 
 products = Blueprint("products", __name__)  # previously "products"
 
@@ -269,8 +272,164 @@ def confirm_order():
     cart_collection.delete_many({"user_email": user_email})
     
     current_date = datetime.utcnow().strftime("%B %d, %Y at %I:%M %p")
-    flash(f"Order #{order_id} confirmed successfully! Total amount: ₹{total}")
-    return render_template("order_confirmed.html", items=items, total=total, order_id=order_id, user_email=user_email, current_date=current_date)
+    
+    # Prepare order data for email
+    order_data = {
+        'order_id': order_id,
+        'user_email': user_email,
+        'items': items,
+        'total': total,
+        'current_date': current_date
+    }
+    
+    # Generate PDF receipt and send email
+    email_sent = False
+    try:
+        # Create receipts directory
+        receipts_dir = create_receipts_directory()
+        
+        # Generate filename
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        username_clean = user_email.replace("@", "_").replace(".", "_")
+        filename = f"receipt_{username_clean}_{timestamp}.pdf"
+        pdf_path = os.path.join(receipts_dir, filename)
+        
+        # Generate PDF
+        generate_receipt_pdf(order_data, pdf_path)
+        
+        # Send email with PDF attachment
+        email_sent = send_receipt_email(user_email, order_data, pdf_path)
+        
+        # Optionally cleanup PDF file after sending (uncomment if you want to delete)
+        # cleanup_pdf_file(pdf_path)
+        
+    except Exception as e:
+        current_app.logger.error(f"Failed to send email receipt: {str(e)}")
+        email_sent = False
+    
+    # Flash message with email status
+    if email_sent:
+        flash(f"Order #{order_id} confirmed successfully! Total amount: ₹{total}. A copy of your receipt has been sent to your email.")
+    else:
+        flash(f"Order #{order_id} confirmed successfully! Total amount: ₹{total}. Note: Email receipt could not be sent.")
+    
+    return render_template("order_confirmed.html", items=items, total=total, order_id=order_id, user_email=user_email, current_date=current_date, email_sent=email_sent)
+
+
+@products.route("/download-receipt")
+def download_receipt():
+    """Generate and download PDF receipt for the last order"""
+    if "user" not in session:
+        flash("Please log in to download your receipt.")
+        return redirect(url_for("auth.login"))
+
+    user_email = session["user"]
+    
+    # Get order data from session or request parameters
+    order_id = request.args.get('order_id')
+    if not order_id:
+        flash("No order ID provided.")
+        return redirect(url_for("products.list_products"))
+    
+    # For this implementation, we'll recreate the order data from the order_id
+    # In a real application, you might want to store order data in a separate orders collection
+    try:
+        # Create receipts directory
+        receipts_dir = create_receipts_directory()
+        
+        # Generate filename
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        username_clean = user_email.replace("@", "_").replace(".", "_")
+        filename = f"receipt_{username_clean}_{timestamp}.pdf"
+        file_path = os.path.join(receipts_dir, filename)
+        
+        # For this demo, we'll create a sample order data
+        # In a real app, you'd fetch this from an orders collection
+        order_data = {
+            'order_id': order_id,
+            'user_email': user_email,
+            'items': [],  # This would be fetched from orders collection
+            'total': 0,   # This would be fetched from orders collection
+            'current_date': datetime.utcnow().strftime("%B %d, %Y at %I:%M %p")
+        }
+        
+        # Generate PDF
+        generate_receipt_pdf(order_data, file_path)
+        
+        # Send file for download
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=f"KloudCart_Receipt_{order_id}.pdf",
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        flash(f"Error generating receipt: {str(e)}")
+        return redirect(url_for("products.list_products"))
+
+
+@products.route("/download-receipt-with-data", methods=["POST"])
+def download_receipt_with_data():
+    """Generate and download PDF receipt with order data from form"""
+    if "user" not in session:
+        flash("Please log in to download your receipt.")
+        return redirect(url_for("auth.login"))
+
+    user_email = session["user"]
+    
+    try:
+        # Get order data from form
+        order_id = request.form.get('order_id')
+        total = float(request.form.get('total', 0))
+        current_date = request.form.get('current_date', datetime.utcnow().strftime("%B %d, %Y at %I:%M %p"))
+        
+        # Parse items from form data
+        items = []
+        item_count = int(request.form.get('item_count', 0))
+        
+        for i in range(item_count):
+            item = {
+                'name': request.form.get(f'item_{i}_name', ''),
+                'category': request.form.get(f'item_{i}_category', ''),
+                'quantity': int(request.form.get(f'item_{i}_quantity', 0)),
+                'price': float(request.form.get(f'item_{i}_price', 0)),
+                'subtotal': float(request.form.get(f'item_{i}_subtotal', 0))
+            }
+            items.append(item)
+        
+        # Create receipts directory
+        receipts_dir = create_receipts_directory()
+        
+        # Generate filename
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        username_clean = user_email.replace("@", "_").replace(".", "_")
+        filename = f"receipt_{username_clean}_{timestamp}.pdf"
+        file_path = os.path.join(receipts_dir, filename)
+        
+        # Prepare order data
+        order_data = {
+            'order_id': order_id,
+            'user_email': user_email,
+            'items': items,
+            'total': total,
+            'current_date': current_date
+        }
+        
+        # Generate PDF
+        generate_receipt_pdf(order_data, file_path)
+        
+        # Send file for download
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=f"KloudCart_Receipt_{order_id}.pdf",
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        flash(f"Error generating receipt: {str(e)}")
+        return redirect(url_for("products.list_products"))
 
 
 
