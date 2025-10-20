@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kloudcart
+    ports:
+      - "80:5000"  # Map host port 80 to container port 5000
+    env_file:
+      - .env  # Load environment variables from .env file
+    volumes:
+      # Mount uploads directory to persist uploaded images
+      - ./Kloudpython/static/uploads:/app/Kloudpython/static/uploads
+      # Mount receipts directory to persist generated PDFs
+      - ./Kloudpython/static/receipts:/app/Kloudpython/static/receipts
+    restart: always
+

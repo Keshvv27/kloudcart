@@ -1,3 +1,8 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
 # Python
 __pycache__/
 *.py[cod]
@@ -17,7 +22,7 @@ env/
 env.bak/
 venv.bak/
 
-# IDE settings
+# IDE
 .idea/
 .vscode/
 *.swp
@@ -27,41 +32,30 @@ venv.bak/
 .pydevproject
 .settings/
 
-# Environment variables
+# Environment files
 .env
 .env.local
 .env.*.local
 .env.production
 .env.development
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
 # Logs
 *.log
 logs/
 *.log.*
 
-# Flask instance folder
-instance/
-.webassets-cache
-
-# Coverage / testing
+# Testing
+.pytest_cache/
 .coverage
-.coverage.*
 htmlcov/
 .tox/
 .nox/
 .cache
-.pytest_cache/
 .hypothesis/
 nosetests.xml
 coverage.xml
-*.cover
 
-# User-generated content (receipts and uploads)
+# User-generated content (receipts and uploads - will be created at runtime)
 Kloudpython/static/receipts/*.pdf
 Kloudpython/static/uploads/*
 !Kloudpython/static/uploads/.gitkeep
@@ -76,36 +70,9 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+# Documentation (optional - comment out if you want docs in image)
+# *.md
+# !README.md
 
 # Temporary files
 *.tmp
@@ -113,3 +80,15 @@ dmypy.json
 *.bak
 *.swp
 *~
+
+# Database files (if any local ones exist)
+*.db
+*.sqlite
+*.sqlite3
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Coverage reports
+htmlcov/
+.coverage

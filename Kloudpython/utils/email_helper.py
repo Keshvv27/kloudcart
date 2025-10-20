@@ -18,8 +18,8 @@ def send_receipt_email(user_email, order_data, pdf_path):
         bool: True if email sent successfully, False otherwise
     """
     try:
-        # Initialize Flask-Mail
-        mail = Mail(current_app)
+        # Get initialized Flask-Mail instance (fallback to creating one if missing)
+        mail = current_app.extensions.get('mail') or Mail(current_app)
         
         # Create message
         msg = Message(
@@ -90,9 +90,9 @@ support@kloudcart.com
         </html>
         """
         
-        # Attach PDF file
+        # Attach PDF file (use direct filesystem open to support absolute paths in Docker)
         if os.path.exists(pdf_path):
-            with current_app.open_resource(pdf_path) as pdf_file:
+            with open(pdf_path, 'rb') as pdf_file:
                 msg.attach(
                     filename=f"KloudCart_Receipt_{order_data['order_id']}.pdf",
                     content_type="application/pdf",

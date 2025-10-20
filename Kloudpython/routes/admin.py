@@ -38,7 +38,7 @@ def save_uploaded_file(file):
 # Admin Dashboard
 @admin.route("/admin/dashboard")
 def admin_dashboard():
-    if session.get("user") != "admin@kloudcart.com":
+    if session.get("user") != "niteshyrai43@gmail.com":
         flash("Access denied. Admins only!")
         return redirect(url_for("products.list_products"))
     
@@ -63,7 +63,7 @@ def admin_dashboard():
 # Admin Receipts Logs
 @admin.route("/admin/receipts")
 def admin_receipts():
-    if session.get("user") != "admin@kloudcart.com":
+    if session.get("user") != "niteshyrai43@gmail.com":
         flash("Access denied. Admins only!")
         return redirect(url_for("products.list_products"))
 
@@ -90,7 +90,7 @@ def admin_receipts():
 # Add Product
 @admin.route("/admin/add", methods=["GET", "POST"])
 def add_product():
-    if session.get("user") != "admin@kloudcart.com":
+    if session.get("user") != "niteshyrai43@gmail.com":
         flash("Access denied.")
         return redirect(url_for("products.list_products"))
 
@@ -128,7 +128,7 @@ def add_product():
 # Edit Product
 @admin.route("/admin/edit/<product_id>", methods=["GET", "POST"])
 def edit_product(product_id):
-    if session.get("user") != "admin@kloudcart.com":
+    if session.get("user") != "niteshyrai43@gmail.com":
         flash("Access denied.")
         return redirect(url_for("products.list_products"))
 
@@ -191,7 +191,7 @@ def edit_product(product_id):
 #  Delete Product
 @admin.route("/admin/delete/<product_id>")
 def delete_product(product_id):
-    if session.get("user") != "admin@kloudcart.com":
+    if session.get("user") != "niteshyrai43@gmail.com":
         flash("Access denied.")
         return redirect(url_for("products.list_products"))
 

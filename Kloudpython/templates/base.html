@@ -36,7 +36,7 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
     {% endif %}
 
-    {% if session.get('user') == "admin@kloudcart.com" %}
+    {% if session.get('user') == "niteshyrai43@gmail.com" %}
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}"><i class="fas fa-cog me-1"></i>Admin</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_receipts') }}"><i class="fas fa-receipt me-1"></i>Receipts</a></li>
     {% endif %}

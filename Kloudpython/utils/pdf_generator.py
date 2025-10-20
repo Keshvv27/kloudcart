@@ -32,6 +32,9 @@ def generate_receipt_pdf(order_data, output_path):
         str: Path to the generated PDF file
     """
     
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
     # Create the PDF document
     doc = SimpleDocTemplate(output_path, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
     
@@ -76,9 +79,9 @@ def generate_receipt_pdf(order_data, output_path):
     
     # Order details
     order_details = [
-        ["Order ID:", order_data['order_id']],
-        ["Customer:", order_data['user_email']],
-        ["Order Date:", order_data['current_date']],
+        ["Order ID:", order_data.get('order_id', '')],
+        ["Customer:", order_data.get('user_email', '')],
+        ["Order Date:", order_data.get('current_date', get_ist_time().strftime("%B %d, %Y at %I:%M %p"))],
         ["", ""]  # Empty row for spacing
     ]
     
@@ -98,14 +101,14 @@ def generate_receipt_pdf(order_data, output_path):
     
     # Items data
     items_data = [items_header]
-    for i, item in enumerate(order_data['items'], 1):
+    for i, item in enumerate(order_data.get('items', []), 1):
         items_data.append([
             str(i),
-            item['name'],
+            item.get('name', ''),
             item.get('category', 'N/A'),
-            str(item['quantity']),
-            f"{item['price']:.2f}",
-            f"{item['subtotal']:.2f}"
+            str(item.get('quantity', 0)),
+            f"{float(item.get('price', 0)):.2f}",
+            f"{float(item.get('subtotal', 0)):.2f}"
         ])
     
     # Create items table
@@ -132,8 +135,9 @@ def generate_receipt_pdf(order_data, output_path):
     elements.append(Spacer(1, 20))
     
     # Total section
+    total_amount = float(order_data.get('total', 0))
     total_data = [
-        ["", "", "", "", "Total Amount:", f"₹{order_data['total']:.2f}"]
+        ["", "", "", "", "Total Amount:", f"₹{total_amount:.2f}"]
     ]
     
     total_table = Table(total_data, colWidths=[0.5*inch, 2.5*inch, 1.5*inch, 0.8*inch, 1.2*inch, 1.2*inch])

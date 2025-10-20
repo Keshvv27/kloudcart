@@ -67,7 +67,7 @@ def admin_dashboard():
         flash("Please log in to access the admin panel.")
         return redirect(url_for("auth.login"))
 
-    if session["user"] != "admin@kloudcart.com":
+    if session["user"] != "niteshyrai43@gmail.com":
         flash("Access denied. Admins only!")
         return redirect(url_for("auth.home"))
 
