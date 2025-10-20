@@ -30,7 +30,7 @@ Monitoring via AWS CloudWatch (logs + metrics)
 Frontend: HTML, CSS, JavaScript (React optional)
 Backend: Python Flask
 Database: MongoDB Atlas
-Email Service: SMTP (Gmail) or Mailgun
+Email Service: SMTP (Gmail) 
 Containerization: Docker, Docker Compose
 Deployment: AWS EC2 (t2.micro – Free Tier)
 Monitoring: AWS CloudWatch
